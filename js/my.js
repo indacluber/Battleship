@@ -45,7 +45,7 @@ var model = {
       if (index >= 0) {
         ship.hits[index] = "hit"; //есть попадание
         veiw.displayHit(guess);
-        veiw.displayMassage("HIT!!!!");
+        veiw.displayMassage("Попал");
         if (this.isSunk(ship)) {
           veiw.displayMassage("Ты потопил мой корабль");
           this.shipsSunk++;
@@ -65,6 +65,57 @@ var model = {
     }
     return true;
   },
+
+  // генерация кораблей на игровом поле
+  generateShipLocations: function () {
+    var location;
+    for (var i = 0; i < this.numShips; i++) {
+      do {
+        location = this.generateShip();
+      } while (this.collision(location));
+      this.ships[i].location = location;
+    }
+    console.log("Корабли находятся по таким координатам: ");
+    console.log(this.ships);
+  },
+
+  generateShip: function () {
+    var direction = Math.floor(Math.random() * 2);
+    var row, col;
+    if (direction === 1) {
+      // horizontal ship
+      row = Math.floor(Math.random() * this.boardSize);
+      col = Math.floor(Math.random() * (this.boardSize - this.shipLenght));
+    } else {
+      // vertical ship
+      row = Math.floor(Math.random() * (this.boardSize - this.shipLenght));
+      col = Math.floor(Math.random() * this.boardSize);
+    }
+    var newShipLocation = [];
+
+    for (var i = 0; i < this.shipLenght; i++) {
+      if (direction === 1) {
+        //добавляем массив в горизонтальный корабль
+        newShipLocation.push(row + "" + (col + i));
+      } else {
+        //добавляем массив в вертикальный корабль
+        newShipLocation.push(row + i + "" + col);
+      }
+    }
+    return newShipLocation;
+  },
+
+  collision: function (location) {
+    for (var i = 0; i < this.shipLenght; i++) {
+      var ship = model.ships[i];
+      for (var j = 0; j < location.length; j++) {
+        if (ship.location.indexOf(location[j]) >= 0) {
+          return true;
+        }
+      }
+    }
+    return false;
+  },
 };
 
 var controler = {
@@ -76,7 +127,7 @@ var controler = {
       var hit = model.fire(location);
       if (hit && model.shipsSunk === model.numShips) {
         veiw.displayMassage(
-          "Вы потопили вс корабли за: " + this.guesses + " выстрелов"
+          "Вы потопили все корабли за: " + this.guesses + " выстрелов"
         );
       }
     }

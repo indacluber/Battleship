@@ -14,6 +14,7 @@ div#messageArea {
   top: 0px;
   left: 0px;
   color: rgb(85, 175, 20);
+  font-size: 2em;
 }
 table {
   position: absolute;
